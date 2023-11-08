@@ -19,7 +19,6 @@ package com.android.internal.gmscompat;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
@@ -56,29 +55,12 @@ public final class AttestationHooks {
         }
     }
 
-    private static void setVersionField(String key, Integer value) {
-        try {
-            // Unlock
-            Field field = Build.VERSION.class.getDeclaredField(key);
-            field.setAccessible(true);
-
-            // Edit
-            field.set(null, value);
-
-            // Lock
-            field.setAccessible(false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            Log.e(TAG, "Failed to spoof Build." + key, e);
-        }
-    }
-
     private static void spoofBuildGms() {
         // Alter model name and fingerprint to avoid hardware attestation enforcement
-        setBuildField("FINGERPRINT", "google/marlin/marlin:7.1.2/NJH47F/4146041:user/release-keys");
-        setBuildField("PRODUCT", "marlin");
-        setBuildField("DEVICE", "marlin");
-        setBuildField("MODEL", "Pixel XL");
-        setVersionField("DEVICE_INITIAL_SDK_INT", Build.VERSION_CODES.N_MR1);
+        setBuildField("FINGERPRINT", "google/bullhead/bullhead:8.0.0/OPR6.170623.013/4283548:user/release-keys");
+        setBuildField("DEVICE", "bullhead");
+        setBuildField("PRODUCT", "bullhead");
+        setBuildField("MODEL", "Nexus 5X");
     }
 
     public static void initApplicationBeforeOnCreate(Context context) {
