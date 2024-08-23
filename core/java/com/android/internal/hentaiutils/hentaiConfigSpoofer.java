@@ -18,42 +18,16 @@ package com.android.internal.hentaiutils;
 
 import android.content.res.Resources;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import java.util.Arrays;
 
-public final class HentaiConfigUtils {
-    private static final String TAG = "HentaiConfigUtils";
-    private static final String PACKAGE_SPT = "com.hentai.product.spt";
+public final class hentaiConfigSpoofer {
+    private static final String TAG = "hentaiConfigSpoofer";
 
-    private HentaiConfigUtils() { }
-
-    private static String[] deviceConfigsCache = null;
+    private hentaiConfigSpoofer() { }
 
     private static String[] getDeviceConfigsOverride(Context context) {
-        if (deviceConfigsCache != null) {
-            return deviceConfigsCache;
-        }
-
-        PackageManager pm = context.getPackageManager();
-
-        try {
-            Resources resources = pm.getResourcesForApplication(PACKAGE_SPT);
-            int resourceId = resources.getIdentifier("deviceConfig", "array", PACKAGE_SPT);
-
-            if (resourceId != 0) {
-                deviceConfigsCache = resources.getStringArray(resourceId);
-                return deviceConfigsCache;
-            } else {
-                Log.d(TAG, "Resource ID is not found");
-                deviceConfigsCache = new String[0];
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.i(TAG, "Error accessing resources for '" + PACKAGE_SPT + "': " + e.getMessage());
-            deviceConfigsCache = new String[0];
-        }
-
-        return deviceConfigsCache;
+        return hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SPT, "deviceConfig");
     }
 
     public static String setOverriddenValue(Context context, String namespace, String name) {

@@ -30,11 +30,10 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /** @hide */
-public final class HentaiSpoofer {
-    private static final String TAG = "HentaiSpoofer";
+public final class hentaiSpoofer {
+    private static final String TAG = "hentaiSpoofer";
 
     // Play Integrity
-    private static final String PACKAGE_SVT = "com.hentai.lewdb.svt";
     private static final String PACKAGE_GMS = "com.google.android.gms";
     private static final String PACKAGE_FINSKY = "com.android.vending";
     private static final String PROCESS_UNSTABLE = "com.google.android.gms.unstable";
@@ -44,7 +43,6 @@ public final class HentaiSpoofer {
     private static volatile boolean sIsFinsky = false;
 
     // Product Spoofing
-    private static final String PACKAGE_SPT = "com.hentai.product.spt";
     private static final String[] PROCESSES_SPT = {
         // Google
         "com.google.android.googlequicksearchbox",
@@ -58,7 +56,19 @@ public final class HentaiSpoofer {
         "com.google.pixel.livewallpaper",
     };
 
-    private HentaiSpoofer() { }
+    // Generic Build Proprieties list
+    private static final String[] buildProperties = {
+        "MODEL",
+        "DEVICE",
+        "PRODUCT",
+        "BRAND",
+        "MANUFACTURER",
+        "FINGERPRINT",
+        "TYPE",
+        "TAGS"
+    };
+
+    private hentaiSpoofer() { }
 
     private static void setBuildField(String key, String value) {
         try {
@@ -87,68 +97,30 @@ public final class HentaiSpoofer {
 
     // Play Integrity
     private static void spoofGmsAttest(Context context) {
-        PackageManager pm = context.getPackageManager();
+        String[] sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SVT, "certifiedBuildProperties");
 
-        try {
-            Resources resources = pm.getResourcesForApplication(PACKAGE_SVT);
-            int resourceId = resources.getIdentifier("certifiedBuildProperties", "array", PACKAGE_SVT);
+        if (sCertifiedProps.length > 0) {
+            sIsSvt = true;
 
-            if (resourceId != 0) {
-                String[] sCertifiedProps = resources.getStringArray(resourceId);
-                String[] buildProperties = {"MODEL", "DEVICE", "PRODUCT", "BRAND", "MANUFACTURER", "FINGERPRINT", "TYPE", "TAGS"};
-
-                if (sCertifiedProps != null) {
-                    sIsSvt = true;
-
-                    for (String prop : buildProperties) {
-                        int index = Arrays.asList(buildProperties).indexOf(prop);
-                        if (index < sCertifiedProps.length && sCertifiedProps[index] != null && !sCertifiedProps[index].isEmpty()) {
-                            setBuildField(prop, sCertifiedProps[index]);
-                        }
-                    }
-                } else {
-                    Log.d(TAG, "sCertifiedProps is null");
+            for (int i = 0; i < buildProperties.length && i < sCertifiedProps.length; i++) {
+                if (sCertifiedProps[i] != null && !sCertifiedProps[i].isEmpty()) {
+                    setBuildField(buildProperties[i], sCertifiedProps[i]);
                 }
-            } else {
-                Log.d(TAG, "Resource ID is not found");
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.i(TAG, "Error accessing resources for '" + PACKAGE_SVT + "': " + e.getMessage());
         }
-
-        return;
     }
 
     // Product Spoofing
     private static void spoofGms(Context context) {
-        PackageManager pm = context.getPackageManager();
+        String[] sSpoofProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SPT, "buildProperties");
 
-        try {
-            Resources resources = pm.getResourcesForApplication(PACKAGE_SPT);
-            int resourceId = resources.getIdentifier("buildProperties", "array", PACKAGE_SPT);
-
-            if (resourceId != 0) {
-                String[] sSpoofProps = resources.getStringArray(resourceId);
-                String[] buildProperties = {"MODEL", "DEVICE", "PRODUCT", "BRAND", "MANUFACTURER", "FINGERPRINT", "TYPE", "TAGS"};
-
-                if (sSpoofProps != null) {
-                    for (String prop : buildProperties) {
-                        int index = Arrays.asList(buildProperties).indexOf(prop);
-                        if (index < sSpoofProps.length && sSpoofProps[index] != null && !sSpoofProps[index].isEmpty()) {
-                            setBuildField(prop, sSpoofProps[index]);
-                        }
-                    }
-                } else {
-                    Log.d(TAG, "sSpoofProps is null");
+        if (sSpoofProps.length > 0) {
+            for (int i = 0; i < buildProperties.length && i < sSpoofProps.length; i++) {
+                if (sSpoofProps[i] != null && !sSpoofProps[i].isEmpty()) {
+                    setBuildField(buildProperties[i], sSpoofProps[i]);
                 }
-            } else {
-                Log.d(TAG, "Resource ID is not found");
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.i(TAG, "Error accessing resources for '" + PACKAGE_SPT + "': " + e.getMessage());
         }
-
-        return;
     }
 
     public static void initApplicationBeforeOnCreate(Context context) {
@@ -182,6 +154,12 @@ public final class HentaiSpoofer {
     }
 
     public static void onEngineGetCertificateChain() {
+        // If a keybox is found, don't block key attestation
+        if (KeyProviderManager.isKeyboxAvailable()) {
+            Log.d(TAG, "Key attestation blocking is disabled because a keybox is present");
+            return;
+        }
+
         // Check stack for SafetyNet or Play Integrity
         if (sIsSvt && (isCallerSafetyNet() || sIsFinsky)) {
             Log.i(TAG, "Blocked key attestation sIsGms=" + sIsGms + " sIsFinsky=" + sIsFinsky);

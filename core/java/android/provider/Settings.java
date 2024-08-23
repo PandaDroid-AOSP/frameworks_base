@@ -123,7 +123,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-import com.android.internal.hentaiutils.HentaiConfigUtils;
+import com.android.internal.hentaiutils.hentaiConfigSpoofer;
 
 /**
  * The Settings provider contains global system-level device preferences.
@@ -21130,7 +21130,7 @@ public final class Settings {
             ContentResolver resolver = getContentResolver();
 
             // Check if the value should be overridden
-            String overriddenValue = HentaiConfigUtils.setOverriddenValue(context, namespace, name);
+            String overriddenValue = hentaiConfigSpoofer.setOverriddenValue(context, namespace, name);
             if (overriddenValue != null) {
                 value = overriddenValue;
             }
@@ -21157,7 +21157,7 @@ public final class Settings {
                 throws DeviceConfig.BadConfigException {
             Context context = ActivityThread.currentApplication().getApplicationContext();
             for (Map.Entry<String, String> entry : keyValues.entrySet()) {
-                String overriddenValue = HentaiConfigUtils.setOverriddenValue(context, namespace, entry.getKey());
+                String overriddenValue = hentaiConfigSpoofer.setOverriddenValue(context, namespace, entry.getKey());
                 if (overriddenValue != null) {
                     keyValues.put(entry.getKey(), overriddenValue);
                 }

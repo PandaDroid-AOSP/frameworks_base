@@ -48,7 +48,7 @@ import android.system.keystore2.ResponseCode;
 import android.util.Log;
 
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.internal.hentaiutils.HentaiSpoofer;
+import com.android.internal.hentaiutils.hentaiSpoofer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -179,7 +179,7 @@ public class AndroidKeyStoreSpi extends KeyStoreSpi {
 
     @Override
     public Certificate[] engineGetCertificateChain(String alias) {
-        HentaiSpoofer.onEngineGetCertificateChain();
+        hentaiSpoofer.onEngineGetCertificateChain();
 
         KeyEntryResponse response = getKeyMetadata(alias);
 
