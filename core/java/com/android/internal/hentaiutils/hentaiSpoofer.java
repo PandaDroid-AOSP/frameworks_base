@@ -97,7 +97,7 @@ public final class hentaiSpoofer {
 
     // Play Integrity
     private static void spoofGmsAttest(Context context) {
-        String[] sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SVT, "certifiedBuildProperties");
+        String[] sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_DEVICE, "certifiedBuildProperties");
 
         if (sCertifiedProps.length > 0) {
             sIsSvt = true;

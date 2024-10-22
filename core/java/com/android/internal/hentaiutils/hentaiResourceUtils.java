@@ -27,6 +27,7 @@ public final class hentaiResourceUtils {
     // Common package names we use
     public static final String PACKAGE_SVT = "com.hentai.lewdb.svt";
     public static final String PACKAGE_SPT = "com.hentai.product.spt";
+    public static final String PACKAGE_DEVICE = "com.hentai.product.device";
 
     public static String[] loadArrayFromResources(Context context, String appName, String arrayName) {
         PackageManager pm = context.getPackageManager();
