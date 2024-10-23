@@ -58,7 +58,7 @@ public final class KeyProviderManager {
                 return;
             }
 
-            String[] keybox = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SVT, "certifiedKeybox");
+            String[] keybox = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SECRET, "certifiedKeybox");
 
             Arrays.stream(keybox)
                     .map(entry -> entry.split(":", 2))
