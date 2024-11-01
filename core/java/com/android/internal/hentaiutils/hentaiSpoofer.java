@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
-import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,17 +32,43 @@ import java.util.Arrays;
 public final class hentaiSpoofer {
     private static final String TAG = "hentaiSpoofer";
 
-    // Play Integrity
+    // Default package names
     private static final String PACKAGE_GMS = "com.google.android.gms";
     private static final String PACKAGE_FINSKY = "com.android.vending";
     private static final String PROCESS_UNSTABLE = "com.google.android.gms.unstable";
 
+    // Initialize the values we should cache
+    private static volatile String[] sSpoofProps = null;
+    private static volatile String[] sCertifiedProps = null;
+    private static volatile String[] sProductSpoofProps = null;
+
     private static volatile boolean sIsSvt = false;
     private static volatile boolean sIsGms = false;
     private static volatile boolean sIsFinsky = false;
+    private static volatile boolean sDevicePackageSpoof = false;
+
+    // Spoofing blacklist
+    private static final String[] PROCESSES_BLACKLISTED = {
+        // Thermometer for guides
+        "com.google.android.apps.pixel.health",
+        // GMS Unstable (This cannot be spoofed because of PI)
+        "com.google.android.gms.unstable",
+        // Google Camera
+        "com.google.android.GoogleCamera",
+        "com.google.android.GoogleCameraEng",
+        "com.google.android.apps.googlecamera.fishfood",
+    };
+
+    // Spoof every google app
+    private static final String[] PACKAGES_SPOOF = {
+        // Every google app known to man
+        "com.google.",
+        // Play Store
+        "com.android.vending",
+    };
 
     // Product Spoofing
-    private static final String[] PROCESSES_SPT = {
+    private static final String[] PACKAGES_SPT = {
         // Google
         "com.google.android.googlequicksearchbox",
         // Photos
@@ -86,18 +111,49 @@ public final class hentaiSpoofer {
         }
     }
 
-    private static boolean spoofProcesses(String processName, String[] spoofProcesses) {
-        for (String spoofProcess : spoofProcesses) {
-            if (processName.startsWith(spoofProcess)) {
+    private static boolean isBlacklisted(String processName) {
+        for (String blacklisted : PROCESSES_BLACKLISTED) {
+            if (processName.startsWith(blacklisted)) {
                 return true;
             }
         }
         return false;
     }
 
+    private static boolean spoofPackage(String packageName, String processName, String[] spoofProcesses) {
+        if (isBlacklisted(processName)) {
+            return false;
+        }
+
+        for (String spoofProcess : spoofProcesses) {
+            if (packageName.startsWith(spoofProcess)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Spoof for device features
+    private static void spoofProductPackages(Context context) {
+        if (sProductSpoofProps == null) {
+            sProductSpoofProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_DEVICE, "buildProperties");
+        }
+
+        if (sProductSpoofProps.length > 0) {
+            sDevicePackageSpoof = true;
+            for (int i = 0; i < buildProperties.length && i < sProductSpoofProps.length; i++) {
+                if (sProductSpoofProps[i] != null && !sProductSpoofProps[i].isEmpty()) {
+                    setBuildField(buildProperties[i], sProductSpoofProps[i]);
+                }
+            }
+        }
+    }
+
     // Play Integrity
     private static void spoofGmsAttest(Context context) {
-        String[] sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_DEVICE, "certifiedBuildProperties");
+        if (sCertifiedProps == null) {
+            sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_DEVICE, "certifiedBuildProperties");
+        }
 
         if (sCertifiedProps.length > 0) {
             sIsSvt = true;
@@ -112,7 +168,9 @@ public final class hentaiSpoofer {
 
     // Product Spoofing
     private static void spoofGms(Context context) {
-        String[] sSpoofProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SPT, "buildProperties");
+        if (sSpoofProps == null) {
+            sSpoofProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SPT, "buildProperties");
+        }
 
         if (sSpoofProps.length > 0) {
             for (int i = 0; i < buildProperties.length && i < sSpoofProps.length; i++) {
@@ -142,9 +200,16 @@ public final class hentaiSpoofer {
             sIsFinsky = true;
         }
 
+        // Device Spoofing
+        if (spoofPackage(packageName, processName, PACKAGES_SPOOF)) {
+            spoofProductPackages(context);
+        }
+
         // Product Spoofing
-        if (spoofProcesses(processName, PROCESSES_SPT)) {
-            spoofGms(context);
+        if (!sDevicePackageSpoof) {
+            if (spoofPackage(packageName, processName, PACKAGES_SPT)) {
+                spoofGms(context);
+            }
         }
     }
 

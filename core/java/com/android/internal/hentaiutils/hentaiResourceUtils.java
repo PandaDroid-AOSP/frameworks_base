@@ -38,11 +38,8 @@ public final class hentaiResourceUtils {
 
             if (resourceId != 0) {
                 return resources.getStringArray(resourceId);
-            } else {
-                Log.d(TAG, "Resource ID is not found");
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.i(TAG, "Error accessing resources for '" + appName + "': " + e.getMessage());
             return new String[0];
         }
 

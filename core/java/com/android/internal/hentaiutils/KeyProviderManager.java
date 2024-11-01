@@ -37,6 +37,9 @@ public final class KeyProviderManager {
 
     private static final IKeyboxProvider PROVIDER = new DefaultKeyboxProvider();
 
+    // Store the keybox
+    private static volatile String[] keybox = null;
+
     private KeyProviderManager() {
     }
 
@@ -58,7 +61,9 @@ public final class KeyProviderManager {
                 return;
             }
 
-            String[] keybox = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SECRET, "certifiedKeybox");
+            if (keybox == null) {
+                keybox = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SECRET, "certifiedKeybox");
+            }
 
             Arrays.stream(keybox)
                     .map(entry -> entry.split(":", 2))
