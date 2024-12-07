@@ -27,7 +27,7 @@ public final class hentaiResourceUtils {
     // Common package names we use
     public static final String PACKAGE_SPT = "com.helluva.product.spt";
     public static final String PACKAGE_DEVICE = "com.helluva.product.device";
-    public static final String PACKAGE_SECRET = "com.helluva.product.secret";
+    public static final String PACKAGE_INTEGRITY = "com.helluva.product.integrity";
 
     public static String[] loadArrayFromResources(Context context, String appName, String arrayName) {
         PackageManager pm = context.getPackageManager();

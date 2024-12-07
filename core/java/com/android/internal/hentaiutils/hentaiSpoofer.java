@@ -154,7 +154,7 @@ public final class hentaiSpoofer {
     // Play Integrity
     private static void spoofGmsAttest(Context context) {
         if (sCertifiedProps == null) {
-            sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_DEVICE, "certifiedBuildProperties");
+            sCertifiedProps = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_INTEGRITY, "certifiedBuildProperties");
         }
 
         if (sCertifiedProps.length > 0) {

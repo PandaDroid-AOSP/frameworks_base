@@ -62,7 +62,7 @@ public final class KeyProviderManager {
             }
 
             if (keybox == null) {
-                keybox = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_SECRET, "certifiedKeybox");
+                keybox = hentaiResourceUtils.loadArrayFromResources(context, hentaiResourceUtils.PACKAGE_INTEGRITY, "certifiedKeybox");
             }
 
             Arrays.stream(keybox)
