@@ -49,6 +49,8 @@ public final class hentaiSpoofer {
 
     // Spoofing blacklist
     private static final String[] PROCESSES_BLACKLISTED = {
+        // ARCore
+        "com.google.ar.core",
         // Thermometer for guides
         "com.google.android.apps.pixel.health",
         // GMS Unstable (This cannot be spoofed because of PI)
