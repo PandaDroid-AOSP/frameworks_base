@@ -61,6 +61,8 @@ public final class hentaiSpoofer {
         "com.google.android.apps.googlecamera.fishfood",
         // Pixel Camera Services
         "com.google.android.apps.camera.services",
+        // Settings Intelligence
+        "com.google.android.settings.intelligence",
     };
 
     // Spoof every google app
