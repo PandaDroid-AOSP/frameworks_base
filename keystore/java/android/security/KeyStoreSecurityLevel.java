@@ -161,6 +161,7 @@ public class KeyStoreSecurityLevel {
 
         hentaiKeyboxImitation.putAlgo(algorithm);
         hentaiKeyboxImitation.setAttestationFlag(attestationChallenge != null);
+        hentaiKeyboxImitation.setAttestKeyFlag(attestationKey != null);
 
         return handleExceptions(() -> mSecurityLevel.generateKey(
                 descriptor, attestationKey, args.toArray(new KeyParameter[args.size()]),
