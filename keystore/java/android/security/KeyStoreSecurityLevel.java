@@ -34,6 +34,7 @@ import android.system.keystore2.KeyMetadata;
 import android.system.keystore2.ResponseCode;
 import android.util.Log;
 
+import com.android.internal.hentaiutils.KeyboxChainGenerator.KeyGenParameters;
 import com.android.internal.hentaiutils.hentaiKeyboxImitation;
 
 import java.util.Calendar;
@@ -163,6 +164,17 @@ public class KeyStoreSecurityLevel {
         hentaiKeyboxImitation.setAttestationFlag(attestationChallenge != null);
         hentaiKeyboxImitation.setAttestKeyFlag(attestationKey != null);
 
+        KeyGenParameters params = new KeyGenParameters(args.toArray(new KeyParameter[args.size()]));
+        if (attestationChallenge != null && attestationKey == null) {
+            KeyMetadata metadata = hentaiKeyboxImitation.generateKey(mSecurityLevel,
+                    descriptor, params);
+            if (metadata != null) {
+                return metadata;
+            } else {
+                hentaiKeyboxImitation.setFailFlag(true);
+            }
+        }
+
         return handleExceptions(() -> mSecurityLevel.generateKey(
                 descriptor, attestationKey, args.toArray(new KeyParameter[args.size()]),
                 flags, entropy));
@@ -240,8 +252,5 @@ public class KeyStoreSecurityLevel {
         if (wasInterrupted) {
             Thread.currentThread().interrupt();
         }
-    }
-    public IKeystoreSecurityLevel getBinderInterface() {
-        return mSecurityLevel;
     }
 }
