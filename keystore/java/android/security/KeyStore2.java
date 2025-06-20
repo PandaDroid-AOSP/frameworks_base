@@ -285,8 +285,12 @@ public class KeyStore2 {
             throws KeyStoreException {
         StrictMode.noteDiskRead();
 
-        return hentaiKeyboxImitation.onGetKeyEntry(
-                handleRemoteExceptionWithRetry((service) -> service.getKeyEntry(descriptor)));
+        KeyEntryResponse response = hentaiKeyboxImitation.onGetKeyEntry(descriptor);
+        if (response != null) {
+            return response;
+        }
+
+        return handleRemoteExceptionWithRetry((service) -> service.getKeyEntry(descriptor));
     }
 
     /**
